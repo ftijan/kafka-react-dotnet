@@ -103,8 +103,27 @@ function App() {
                             <div className="section-header">
                                 <h2 className="section-title">Live Weather Forecast (Triggers Kafka Push)</h2>
                                 <div className="header-actions">
-                                    <button className={`toggle-option ${!useCelsius ? 'active' : ''}`} onClick={() => setUseCelsius(false)}>°F</button>
-                                    <button className={`toggle-option ${useCelsius ? 'active' : ''}`} onClick={() => setUseCelsius(true)}>°C</button>
+                                    <fieldset className="toggle-switch" aria-label="Temperature unit selection">
+                                        <legend className="visually-hidden">Temperature unit</legend>
+                                        <button
+                                            className={`toggle-option ${!useCelsius ? 'active' : ''}`}
+                                            onClick={() => setUseCelsius(false)}
+                                            aria-pressed={!useCelsius}
+                                            type="button"
+                                        >
+                                            <span aria-hidden="true">°F</span>
+                                            <span className="visually-hidden">Fahrenheit</span>
+                                        </button>
+                                        <button
+                                            className={`toggle-option ${useCelsius ? 'active' : ''}`}
+                                            onClick={() => setUseCelsius(true)}
+                                            aria-pressed={useCelsius}
+                                            type="button"
+                                        >
+                                            <span aria-hidden="true">°C</span>
+                                            <span className="visually-hidden">Celsius</span>
+                                        </button>
+                                    </fieldset>
                                     <button className="refresh-button" onClick={fetchWeatherForecast} disabled={loading}>
                                         <span>{loading ? 'Loading...' : 'Refresh & Push'}</span>
                                     </button>
