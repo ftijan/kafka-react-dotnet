@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import aspireLogo from '/Aspire.png';
 import './App.css';
 
-// Revert back to camelCase properties
 interface WeatherForecast {
     date: string;
     temperatureC: number;
@@ -13,11 +12,13 @@ interface WeatherForecast {
 function App() {
     const [currentView, setCurrentView] = useState<'live' | 'history'>('live');
 
+    // Shared temperature unit state across both views
+    const [useCelsius, setUseCelsius] = useState(false);
+
     // Live forecast state
     const [weatherData, setWeatherData] = useState<WeatherForecast[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [useCelsius, setUseCelsius] = useState(false);
 
     // Kafka history state
     const [historyData, setHistoryData] = useState<WeatherForecast[][]>([]);
@@ -153,9 +154,32 @@ function App() {
                         <div className="card">
                             <div className="section-header">
                                 <h2 className="section-title">Kafka Event Log History</h2>
-                                <button className="refresh-button" onClick={fetchKafkaHistory} disabled={historyLoading}>
-                                    <span>{historyLoading ? 'Loading...' : 'Refresh Log'}</span>
-                                </button>
+                                <div className="header-actions">
+                                    <fieldset className="toggle-switch" aria-label="Temperature unit selection">
+                                        <legend className="visually-hidden">Temperature unit</legend>
+                                        <button
+                                            className={`toggle-option ${!useCelsius ? 'active' : ''}`}
+                                            onClick={() => setUseCelsius(false)}
+                                            aria-pressed={!useCelsius}
+                                            type="button"
+                                        >
+                                            <span aria-hidden="true">°F</span>
+                                            <span className="visually-hidden">Fahrenheit</span>
+                                        </button>
+                                        <button
+                                            className={`toggle-option ${useCelsius ? 'active' : ''}`}
+                                            onClick={() => setUseCelsius(true)}
+                                            aria-pressed={useCelsius}
+                                            type="button"
+                                        >
+                                            <span aria-hidden="true">°C</span>
+                                            <span className="visually-hidden">Celsius</span>
+                                        </button>
+                                    </fieldset>
+                                    <button className="refresh-button" onClick={fetchKafkaHistory} disabled={historyLoading}>
+                                        <span>{historyLoading ? 'Loading...' : 'Refresh Log'}</span>
+                                    </button>
+                                </div>
                             </div>
 
                             {historyError && <div className="error-message"><span>{historyError}</span></div>}
