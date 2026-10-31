@@ -15,4 +15,4 @@ A distributed application built with **.NET Aspire**, **Apache Kafka**, and a **
 
 ## Note
 
-* This sample application was AI-engineered "aka vibe-coded" with the help of a Google Gemini model.
+* This sample application was AI-engineered (AKA "vibe-coded") with the help of a Google Gemini model.
