@@ -37,6 +37,11 @@ if (app.Environment.IsDevelopment())
 
 string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
 
+var jsonOptions = new JsonSerializerOptions
+{
+	PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+};
+
 var api = app.MapGroup("/api");
 api.MapGet("weatherforecast", async (IProducer<string, string> producer) =>
 {
@@ -51,7 +56,7 @@ api.MapGet("weatherforecast", async (IProducer<string, string> producer) =>
 
 	// - Kafka publish
 	// 1. Serialize the forecast array to JSON
-	var messageValue = JsonSerializer.Serialize(forecast);
+	var messageValue = JsonSerializer.Serialize(forecast, jsonOptions);
 
 	// 2. Publish to the Kafka topic
 	var message = new Message<string, string>
@@ -82,7 +87,7 @@ api.MapGet("weatherforecast/all", (IConsumer<string, string> consumer) =>
 	if (consumeResult != null)
 	{
 		// Parse and add the first message we caught during polling
-		allValues.Add(JsonSerializer.Deserialize<JsonElement>(consumeResult.Message.Value));
+		allValues.Add(JsonSerializer.Deserialize<JsonElement>(consumeResult.Message.Value, jsonOptions));
 	}
 
 	// 3. Keep consuming until no new messages arrive within a short timeout window (meaning we reached the end of the log)
@@ -93,7 +98,7 @@ api.MapGet("weatherforecast/all", (IConsumer<string, string> consumer) =>
 			var cr = consumer.Consume(TimeSpan.FromMilliseconds(200));
 			if (cr == null) break; // End of log reached
 
-			var data = JsonSerializer.Deserialize<JsonElement>(cr.Message.Value);
+			var data = JsonSerializer.Deserialize<JsonElement>(cr.Message.Value, jsonOptions);
 			allValues.Add(data);
 		}
 		catch (ConsumeException)
@@ -103,7 +108,7 @@ api.MapGet("weatherforecast/all", (IConsumer<string, string> consumer) =>
 	}
 
 	// 4. Return the result explicitly as indented JSON
-	return Results.Json(allValues, new JsonSerializerOptions { WriteIndented = true });
+	return Results.Json(allValues, jsonOptions);
 })
 .WithName("GetAllWeatherForecastsFromKafka");
 
