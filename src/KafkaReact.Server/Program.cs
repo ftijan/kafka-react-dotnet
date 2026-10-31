@@ -54,7 +54,6 @@ api.MapGet("weatherforecast", async (IProducer<string, string> producer) =>
         ))
         .ToArray();
 
-	// - Kafka publish
 	// 1. Serialize the forecast array to JSON
 	var messageValue = JsonSerializer.Serialize(forecast, jsonOptions);
 
@@ -67,7 +66,6 @@ api.MapGet("weatherforecast", async (IProducer<string, string> producer) =>
 
 	// "weather-topics" is the name of the topic you are publishing to
 	await producer.ProduceAsync("weather-topics", message);
-	// - end Kafka publish
 
 	return forecast;
 })
@@ -107,7 +105,7 @@ api.MapGet("weatherforecast/all", (IConsumer<string, string> consumer) =>
 		}
 	}
 
-	// 4. Return the result explicitly as indented JSON
+	// 4. Return the result
 	return Results.Json(allValues, jsonOptions);
 })
 .WithName("GetAllWeatherForecastsFromKafka");
