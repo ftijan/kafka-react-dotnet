@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="frontend/frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="KafkaReact.AppHost/KafkaReact.AppHost.csproj" />
+  <Project Path="KafkaReact.Server/KafkaReact.Server.csproj" />
+</Solution>
